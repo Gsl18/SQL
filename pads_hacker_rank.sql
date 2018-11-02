@@ -1,4 +1,4 @@
---This are exercises from Hacker rank website, using adventure works database 
+--These are some queries using adventure works database 
 select * from Person.Person
 
 --get the person's first name with the first letter of the name in () added in the end
@@ -17,7 +17,7 @@ select * from Person.CountryRegion
 
 select * from Person.Person
 
---trying converting row to columns, for this a temp table was created with the specific column names needed, from the source table
+--trying to convert row to columns, for this a temp table was created with the specific column names needed, from the source table
 select [0], [1], [2]
 FROM
 (select ROW_NUMBER() OVER (PARTITION BY EmailPromotion order by FirstName) [rownumber], * from Person.Person)
@@ -26,27 +26,26 @@ PIVOT
 MAX(FirstName) for EmailPromotion in ([0], [1], [2])
 ) AS PIVOTTABLE
 
-create table #TempPerson
+create table ##TempPerson
 (FirstName varchar(20) not null,
 EmailPromotion int not null)
 
-insert into #TempPerson
+insert into ##TempPerson
 select FirstName, EmailPromotion from Person.Person
 
-ALTER TABLE #TempPerson
+ALTER TABLE ##TempPerson
 ALTER COLUMN FirstName nvarchar(50) not NULL
 
-insert into #TempPerson
+insert into ##TempPerson
 select FirstName, EmailPromotion from Person.Person
 
-select * from #TempPerson
+select * from ##TempPerson
 
 --final result of convert rows into columns, in this case the email promotion is in rows and the names under each email promotion are in columns
---I was not able to order the Names by asc order, need to figure this out
 
 select [0], [1], [2]
 FROM
-(select ROW_NUMBER() OVER (PARTITION BY EmailPromotion order by FirstName asc) [RowNumber], * from #TempPerson)
+(select ROW_NUMBER() OVER (PARTITION BY EmailPromotion order by FirstName asc) [RowNumber], * from ##TempPerson)
 as TempTable
 PIVOT
 (MAX (FirstName) for EmailPromotion in ([0], [1], [2])) AS PIVOTTABLE
